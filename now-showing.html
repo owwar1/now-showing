@@ -75,7 +75,7 @@ canvas#dust{position:absolute;inset:0;z-index:5;pointer-events:none}
 
 /* header stays lit above the lights-out overlay, like a sign that never goes off */
 header{position:relative;z-index:6;display:flex;flex-direction:column;align-items:center;gap:.5vh}
-.logos{display:flex;align-items:center;justify-content:center;gap:2vw;height:5vh}
+.logos{display:flex;align-items:center;justify-content:center;gap:2.4vh;height:5vh}
 .logos span{height:100%;display:flex}
 .logos img{height:100%;width:auto;object-fit:contain;
   filter:drop-shadow(0 0 10px rgba(255,255,255,.35))}
@@ -91,7 +91,7 @@ header{position:relative;z-index:6;display:flex;flex-direction:column;align-item
   --tube-off:#64262d;     /* an unlit tube: dull glass, still visible */
 }
 h1{position:relative;display:inline-block;margin-top:.3vh;padding:.2vh 2.4vh .6vh;
-  font-family:'Tilt Neon','Oswald',sans-serif;font-weight:400;font-size:7.4vh;line-height:1;letter-spacing:.12em}
+  font-family:'Tilt Neon','Oswald',sans-serif;font-weight:400;font-size:min(7.4vh,10.5vw);line-height:1;letter-spacing:.12em;white-space:nowrap}   /* stays one line on phones */
 /* no sign board: the tubes hang free, and their red light spills onto the curtain behind */
 h1::before{content:"";position:absolute;inset:-70% -18%;z-index:-1;pointer-events:none;
   background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(220,20,45,.22),rgba(160,10,30,.08) 55%,transparent 72%)}
@@ -108,7 +108,9 @@ h1::before{content:"";position:absolute;inset:-70% -18%;z-index:-1;pointer-event
 /* ---------- POSTERS + MARQUEE ---------- */
 .carousel-wrap{width:100%;height:100%;min-height:0;padding:.8vh 0 1vh}
 .carousel{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
-.poster{position:absolute;height:calc(100% - var(--pad)*2);aspect-ratio:2/3;border-radius:4px;overflow:hidden;background:#0b0004}
+/* frame height: the full poster area, but never wider than the screen (phones held upright) */
+.carousel{--fh:min(100%,calc((94vw - var(--pad)*2)*1.5 + var(--pad)*2))}
+.poster{position:absolute;height:calc(var(--fh) - var(--pad)*2);aspect-ratio:2/3;border-radius:4px;overflow:hidden;background:#0b0004}
 /* the whole poster is always shown, never cropped; if its shape differs from 2:3,
    a blurred copy of the same poster fills the gaps */
 .poster .fill{position:absolute;inset:-6%;background:center/cover no-repeat;filter:blur(18px) brightness(.4)}
@@ -119,14 +121,14 @@ h1::before{content:"";position:absolute;inset:-70% -18%;z-index:-1;pointer-event
 .poster.hidden{z-index:0;opacity:0}
 
 /* red glow behind the poster (opacity only, so it is cheap to animate) */
-.halo{position:absolute;z-index:2;height:100%;border-radius:1.2vh;pointer-events:none;
+.halo{position:absolute;z-index:2;height:var(--fh);border-radius:1.2vh;pointer-events:none;
   box-shadow:0 0 90px 12px rgba(255,30,50,.55),0 30px 80px rgba(0,0,0,.9);
   animation:breathe 5s ease-in-out infinite}
 @keyframes breathe{0%,100%{opacity:.55}50%{opacity:1}}
 
 /* the bulb frame: an old, rusted theatre sign that is failing */
 .marquee{position:absolute;z-index:6;   /* above the lights-out layer: the sign stays on */
-  height:100%;pointer-events:none}
+  height:var(--fh);pointer-events:none}
 .marquee::before{content:"";position:absolute;inset:0;border-radius:.6vh;padding:var(--pad);
   background:
     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3'/><feColorMatrix values='0 0 0 0 .05  0 0 0 0 .03  0 0 0 0 .02  0 0 0 .9 -.25'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>"),
@@ -197,7 +199,7 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center}
 .title.two{align-items:flex-start}                            /* two-line titles fit above the label, same layout height */
 .unit{height:3.1vh;max-width:70vw;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;
   font:600 2.5vh 'Oswald';letter-spacing:.24em;color:var(--blood-glow);text-shadow:0 0 10px rgba(255,0,30,.5)}
-.sub{position:relative;z-index:6;font:400 2.2vh 'Oswald';letter-spacing:.22em;color:var(--ink);opacity:.85;margin-top:2.2vh;text-shadow:0 1px 6px #000,0 0 2px #000}
+.sub{position:relative;z-index:6;white-space:nowrap;font:400 min(2.2vh,3.3vw) 'Oswald';letter-spacing:.22em;color:var(--ink);opacity:.85;margin-top:2.2vh;text-shadow:0 1px 6px #000,0 0 2px #000}
 
 /* ---------- LIGHTS OUT between posters ---------- */
 #dark{position:absolute;inset:0;z-index:5;background:#000;opacity:1;pointer-events:none}
@@ -205,6 +207,9 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center}
 #dark.in{animation:lightsIn 1.1s linear forwards}
 @keyframes lightsOut{0%{opacity:0}12%{opacity:.75}20%{opacity:.15}32%{opacity:.9}40%{opacity:.4}60%,100%{opacity:1}}
 @keyframes lightsIn{0%,25%{opacity:1}32%{opacity:.35}38%{opacity:.95}50%{opacity:.15}56%{opacity:.6}100%{opacity:0}}
+
+/* phones held upright: room for bigger two-line titles */
+@media (orientation:portrait){ .title{height:8.6vh} }
 
 /* fullscreen hint */
 #fsHint{position:absolute;top:1.4vh;right:1.4vw;z-index:40;font:400 1.4vh 'Oswald';letter-spacing:.2em;
@@ -312,7 +317,7 @@ const DAMAGE=[
 function wear(i){ let x=Math.sin((i+1)*12.9898)*43758.5453; x-=Math.floor(x); return x; }
 
 function buildMarquee(){
-  const H=car.clientHeight, pad=innerHeight*0.026; builtH=H;
+  const H=marquee.clientHeight, pad=innerHeight*0.026; builtH=H;
   const W=(H-pad*2)*2/3+pad*2;
   marquee.style.width=halo.style.width=W+"px";
   marquee.querySelectorAll(".bulb").forEach(b=>b.remove());
@@ -366,9 +371,15 @@ function fitText(el,maxWfrac,startVh,minOneLineVh,minTwoLineVh){
   if(!minTwoLineVh) return;
   el.style.whiteSpace="normal"; el.classList.add("two");
   const twoLineH=boxH-0.9*vh;   // leave room for the label tucked up under the title
-  for(let v=minOneLineVh-0.1; v>=minTwoLineVh; v-=0.1){ el.style.fontSize=v*vh+"px"; if(el.scrollHeight<=twoLineH+1&&el.scrollWidth<=maxW+1) return; }
+  const textH=()=>{ const r=document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().height; };   // the text itself, not its box
+  for(let v=minOneLineVh-0.1; v>=minTwoLineVh; v-=0.1){ el.style.fontSize=v*vh+"px"; if(textH()<=twoLineH+1&&el.scrollWidth<=maxW+1) return; }
 }
-function fitCredits(){ fitText(titleEl,0.62,4.4,3.0,1.8); fitText(unitEl,0.70,2.5,1.5); }
+function fitCredits(){
+  const tall=innerWidth<innerHeight;                       // phone held upright: use more of the width
+  const tw=tall?0.92:0.62, uw=tall?0.94:0.70;
+  titleEl.style.maxWidth=tw*100+"vw"; unitEl.style.maxWidth=uw*100+"vw";
+  fitText(titleEl,tw,4.4,3.0,1.8); fitText(unitEl,uw,2.5,1.5);
+}
 
 // fair order: shuffled every time the board opens, reshuffled after each full round,
 // so every poster appears exactly once per round and no one is always first
@@ -389,7 +400,7 @@ function place(p){
   titleEl.textContent=POSTERS[idx].title;
   unitEl.textContent=POSTERS[idx].unit;
   fitCredits();
-  if(car.clientHeight!==builtH) buildMarquee();   // safety net: re-measure if the layout settled late
+  if(marquee.clientHeight!==builtH) buildMarquee();   // safety net: re-measure if the layout settled late
 }
 function step(dir){
   let p=pos+dir;
@@ -416,8 +427,10 @@ addEventListener("resize",fitCredits);
 // so the first click/key anywhere switches to fullscreen.
 // (Use "Start Now Showing.bat" to open it already fullscreen.)
 const fsHint=document.getElementById("fsHint");
-function goFull(){ if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{}); }
-function syncHint(){ fsHint.classList.toggle("gone", !!document.fullscreenElement || innerHeight>=screen.height-2); }
+// phones and tablets (touch screens) skip this: most can't go fullscreen, and a tap shouldn't change the view
+const canFull=!!document.documentElement.requestFullscreen && matchMedia("(pointer:fine)").matches;
+function goFull(){ if(canFull && !document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{}); }
+function syncHint(){ fsHint.classList.toggle("gone", !canFull || !!document.fullscreenElement || innerHeight>=screen.height-2); }
 addEventListener("pointerdown",goFull);
 addEventListener("keydown",e=>{ if(e.key!=="Escape" && e.key.toLowerCase()!=="f") goFull(); });
 document.addEventListener("fullscreenchange",syncHint); addEventListener("resize",syncHint); syncHint();
