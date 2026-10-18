@@ -184,7 +184,8 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center}
 .title{height:5.9vh;max-width:62vw;display:flex;align-items:center;justify-content:center;overflow:hidden;
   font:800 4.4vh 'Cinzel';letter-spacing:.14em;color:#fff;line-height:1.1;
   text-shadow:0 0 16px rgba(255,40,60,.6),0 3px 0 #000}
-.presented{font:400 1.6vh 'Oswald';letter-spacing:.45em;color:var(--muted);margin-top:-.2vh}   /* sits close under the title: title, label and unit read as one credit */
+.presented{font:400 1.6vh 'Oswald';letter-spacing:.45em;color:var(--muted);margin-top:-1.1vh}   /* same gap under the title's capitals as between label and unit */
+.title.two{align-items:flex-start}                            /* two-line titles fit above the label, same layout height */
 .unit{height:3.1vh;max-width:70vw;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;
   font:600 2.5vh 'Oswald';letter-spacing:.24em;color:var(--blood-glow);text-shadow:0 0 10px rgba(255,0,30,.5)}
 .sub{position:relative;z-index:6;font:400 2.2vh 'Oswald';letter-spacing:.22em;color:var(--ink);opacity:.85;margin-top:2.2vh;text-shadow:0 1px 6px #000,0 0 2px #000}
@@ -332,11 +333,12 @@ const titleEl=document.getElementById("title"), unitEl=document.getElementById("
 // shrink long text until it fits its fixed box: one line first, then (titles only) two lines
 function fitText(el,maxWfrac,startVh,minOneLineVh,minTwoLineVh){
   const vh=innerHeight/100, maxW=innerWidth*maxWfrac, boxH=el.clientHeight;
-  el.style.whiteSpace="nowrap";
+  el.style.whiteSpace="nowrap"; el.classList.remove("two");
   for(let v=startVh; v>=minOneLineVh; v-=0.1){ el.style.fontSize=v*vh+"px"; if(el.scrollWidth<=maxW+1) return; }
   if(!minTwoLineVh) return;
-  el.style.whiteSpace="normal";
-  for(let v=minOneLineVh-0.1; v>=minTwoLineVh; v-=0.1){ el.style.fontSize=v*vh+"px"; if(el.scrollHeight<=boxH+1&&el.scrollWidth<=maxW+1) return; }
+  el.style.whiteSpace="normal"; el.classList.add("two");
+  const twoLineH=boxH-0.9*vh;   // leave room for the label tucked up under the title
+  for(let v=minOneLineVh-0.1; v>=minTwoLineVh; v-=0.1){ el.style.fontSize=v*vh+"px"; if(el.scrollHeight<=twoLineH+1&&el.scrollWidth<=maxW+1) return; }
 }
 function fitCredits(){ fitText(titleEl,0.62,4.4,3.0,1.8); fitText(unitEl,0.70,2.5,1.5); }
 
