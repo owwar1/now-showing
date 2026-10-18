@@ -128,23 +128,30 @@ h1::before{content:"";position:absolute;inset:-70% -18%;z-index:-1;pointer-event
 .marquee{position:absolute;z-index:4;height:100%;pointer-events:none}
 .marquee::before{content:"";position:absolute;inset:0;border-radius:.6vh;padding:var(--pad);
   background:
-    radial-gradient(ellipse 30% 8% at 22% 2%,rgba(110,45,18,.55),transparent 70%),
-    radial-gradient(ellipse 10% 22% at 99% 38%,rgba(95,38,14,.6),transparent 70%),
-    radial-gradient(ellipse 25% 6% at 70% 99%,rgba(90,30,12,.55),transparent 70%),
-    radial-gradient(ellipse 9% 18% at 1% 74%,rgba(80,30,10,.5),transparent 70%),
-    linear-gradient(160deg,#1b0d0a 0%,#0e0605 45%,#1a0b08 100%);
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3'/><feColorMatrix values='0 0 0 0 .05  0 0 0 0 .03  0 0 0 0 .02  0 0 0 .9 -.25'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>"),
+    repeating-linear-gradient(97deg,transparent 0 37px,rgba(150,110,80,.07) 37px 38px,transparent 38px 91px),
+    radial-gradient(ellipse 30% 9% at 22% 2%,rgba(120,48,18,.7),transparent 70%),
+    radial-gradient(ellipse 14% 26% at 99% 38%,rgba(105,40,14,.75),transparent 70%),
+    radial-gradient(ellipse 28% 8% at 70% 99%,rgba(100,34,12,.7),transparent 70%),
+    radial-gradient(ellipse 11% 22% at 1% 74%,rgba(90,32,10,.7),transparent 70%),
+    radial-gradient(ellipse 8% 14% at 0% 12%,rgba(60,50,30,.6),transparent 70%),
+    radial-gradient(ellipse 16% 6% at 45% 100%,rgba(20,14,8,.8),transparent 70%),
+    linear-gradient(160deg,#1d0e0a 0%,#0b0504 45%,#180a07 100%);
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;mask-composite:exclude;
-  box-shadow:0 0 0 1px rgba(120,70,40,.35)}
+  box-shadow:0 0 0 1px rgba(120,70,40,.35),inset 0 0 .6vh rgba(0,0,0,.9)}
 
 .bulb{position:absolute;width:1.5vh;height:1.5vh;margin:-.75vh 0 0 -.75vh;border-radius:50%;
   background:radial-gradient(circle at 40% 35%,#5a4030,#1e130c 70%);box-shadow:inset 0 0 .2vh #000}
 .bulb::after{content:"";position:absolute;inset:0;border-radius:50%;
   background:radial-gradient(circle at 40% 35%,#fff3d0 0%,#ffc56a 45%,#d9661f 100%);
   box-shadow:0 0 .6vh .1vh rgba(255,150,70,.6),0 0 1.6vh .2vh rgba(255,80,30,.2);
-  opacity:.6;animation:hum var(--t) ease-in-out infinite;animation-delay:var(--d)}
+  opacity:var(--age,.7);animation:hum var(--t) ease-in-out infinite;animation-delay:var(--d)}
 /* working bulbs: dim, uneven, slowly wavering */
-@keyframes hum{0%,100%{opacity:.62}50%{opacity:.78}}
+@keyframes hum{0%,100%{opacity:calc(var(--age,.7)*.82)}50%{opacity:var(--age,.7)}}   /* each bulb has its own fixed brightness */
+/* tired bulbs: old filament, brown and dim */
+.bulb.tired::after{background:radial-gradient(circle at 40% 35%,#f3dcb0 0%,#c98a3e 45%,#7a3a12 100%);
+  box-shadow:0 0 .45vh .05vh rgba(220,130,60,.45)}
 /* failing bulbs: three different stutter patterns, each bulb at its own speed */
 .bulb.flicker::after{animation:stutter var(--t) steps(1) infinite;animation-delay:var(--d)}
 .bulb.flicker.f2::after{animation-name:stutter2}
@@ -158,6 +165,9 @@ h1::before{content:"";position:absolute;inset:-70% -18%;z-index:-1;pointer-event
 /* a few bulbs glow a sick blood red */
 .bulb.red::after{background:radial-gradient(circle at 40% 35%,#ffd0c8 0%,#ff3b2f 45%,#7a0a0a 100%);
   box-shadow:0 0 .7vh .15vh rgba(255,40,30,.7),0 0 2vh .3vh rgba(200,0,0,.3)}
+/* missing bulbs: just an empty, dirty socket */
+.bulb.missing{background:radial-gradient(circle,#030202 0 32%,#3a2a1e 38%,#1a110b 55%,#0c0705 72%);box-shadow:inset 0 0 .25vh #000}
+.bulb.missing::after{display:none}
 /* broken bulbs: dark, cracked glass */
 .bulb.broken{background:radial-gradient(circle at 40% 35%,#2c2622,#0b0807 70%)}
 .bulb.broken::after{animation:none;opacity:1;box-shadow:none;background:
@@ -283,10 +293,22 @@ const els=POSTERS.map((p,i)=>{
   return el;
 });
 
-// bulb frame: sized to the poster, each bulb gets its own "health"
+// bulb frame: sized to the poster. The damage is FIXED: the same bulbs are broken,
+// missing, dying and flickering every time (positions are fractions of the way
+// around the frame, clockwise from the top-left corner). Only each flickering
+// bulb's rhythm is randomized.
 const marquee=document.getElementById("marquee"), halo=document.getElementById("halo");
 let bulbs=[], builtH=0;
 const rnd=(a,b)=>a+Math.random()*(b-a);
+const DAMAGE=[
+  ["broken",.045],["broken",.215],["broken",.36],["broken",.385],["broken",.62],["broken",.875],   // .36 + .385: a dead patch
+  ["missing",.13],["missing",.735],
+  ["dying",.29],["dying",.505],["dying",.955],
+  ["flicker",.08],["flicker",.17],["flicker",.25],["flicker",.33],["flicker",.43],
+  ["flicker",.55],["flicker",.66],["flicker",.79],["flicker",.84],["flicker",.92],
+];
+// fixed per-bulb wear (same every time): brightness and a few tired, brownish bulbs
+function wear(i){ let x=Math.sin((i+1)*12.9898)*43758.5453; x-=Math.floor(x); return x; }
 
 function buildMarquee(){
   const H=car.clientHeight, pad=innerHeight*0.026; builtH=H;
@@ -299,16 +321,34 @@ function buildMarquee(){
   for(const [ax,ay,bx,by] of sides){
     const n=Math.max(1,Math.round(Math.hypot(bx-ax,by-ay)/gap));
     for(let k=0;k<n;k++){
-      const b=document.createElement("div");
-      const r=Math.random();
-      b.className="bulb"+(r<.04?" broken":r<.07?" dying":r<.30?" flicker f"+(1+Math.floor(Math.random()*3)):"");   // about 1 in 4 flicker, in 3 patterns
+      const b=document.createElement("div"); b.className="bulb";
       b.style.left=(ax+(bx-ax)*k/n)+"px"; b.style.top=(ay+(by-ay)*k/n)+"px";
-      b.style.setProperty("--t",(b.classList.contains("flicker")?rnd(1.6,8):b.classList.contains("dying")?rnd(5,11):rnd(3,7))+"s");
-      b.style.setProperty("--d",(-rnd(0,10))+"s");
-      b.style.setProperty("--r",Math.round(rnd(0,180))+"deg");
       marquee.appendChild(b); bulbs.push(b);
     }
   }
+  // give each damage spot the nearest bulb that is still healthy
+  const N=bulbs.length, state=new Array(N).fill("");
+  for(const [kind,f] of DAMAGE){
+    let best=-1, dist=9;
+    for(let i=0;i<N;i++){ if(state[i]) continue; const d=Math.min(Math.abs(i/N-f),1-Math.abs(i/N-f)); if(d<dist){dist=d;best=i;} }
+    if(best>=0) state[best]=kind;
+  }
+  bulbs.forEach((b,i)=>{
+    const kind=state[i], w=wear(i);
+    if(kind==="flicker"){
+      b.classList.add("flicker","f"+(1+Math.floor(Math.random()*3)));          // random pattern...
+      b.style.setProperty("--t",rnd(1.4,8)+"s");                                 // ...random speed...
+      b.style.setProperty("--d",(-rnd(0,8))+"s");                                // ...random starting point
+    }else if(kind){
+      b.classList.add(kind);
+      b.style.setProperty("--t",(6+w*6)+"s"); b.style.setProperty("--d",(-w*9)+"s");
+    }else{
+      if(w<.3) b.classList.add("tired");
+      b.style.setProperty("--age",(.5+w*.38).toFixed(2));                        // uneven, fixed brightness
+      b.style.setProperty("--t",(3+w*4)+"s"); b.style.setProperty("--d",(-w*7)+"s");
+    }
+    b.style.setProperty("--r",Math.round(w*180)+"deg");                          // crack angle
+  });
 }
 // rebuild whenever the poster area changes size (window resize, fonts finishing loading)
 let rT; new ResizeObserver(()=>{clearTimeout(rT);rT=setTimeout(buildMarquee,60)}).observe(car);
