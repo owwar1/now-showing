@@ -271,7 +271,7 @@ const LOGOS = ["assets/owwa-logo-white.png", "assets/alagang-owwa-white.png"];
 
 // One entry per poster. Leave image "" to show a placeholder.
 const POSTERS = [
-  { image:"assets/sample1.png", title:"TAKBO, TILI, TALON, TILI", unit:"EDUCATION AND TRAINING UNIT" },
+  { image:"assets/sample1.png", title:"TILING TILA TINATAHI", unit:"EDUCATION AND TRAINING UNIT" },
   { image:"assets/sample2.png", title:"BULONG TI SABONG", unit:"EDUCATION AND LIVELIHOOD ASSISTANCE PROGRAM" },
   { image:"assets/sample3.png", title:"KILABOT, NAIYABOT", unit:"EDUCATION FOR DEVELOPMENT SCHOLARSHIP PROGRAM" },
   { image:"assets/sample4.jpg", title:"BIGLANG LIKO", unit:"GENERAL SERVICES UNIT" },
@@ -419,7 +419,7 @@ function show(p,first){
   }
   timer=setTimeout(()=>show(step(1)),SECONDS_PER_POSTER*1000);
 }
-show(0,true);
+place(0);          // first poster waits behind the dark until the show starts (see startShow)
 document.fonts.ready.then(fitCredits);
 addEventListener("resize",fitCredits);
 
@@ -435,11 +435,20 @@ addEventListener("pointerdown",goFull);
 addEventListener("keydown",e=>{ if(e.key!=="Escape" && e.key.toLowerCase()!=="f") goFull(); });
 document.addEventListener("fullscreenchange",syncHint); addEventListener("resize",syncHint); syncHint();
 
-// keyboard: arrows to step, F to toggle fullscreen
+// opening: on a computer the board waits on the dark stage (sign, bulbs and fog only),
+// fullscreen or not, until the presenter presses Space, Enter, -> or Page Down
+// (the last two are what wireless presentation clickers send). Then the lights
+// flicker on and the show loops. Phones can't do this, so they start right away.
+let started=false;
+function startShow(){ if(started) return; started=true; show(0,true); }
+if(!canFull) startShow();
+const START_KEYS=[" ","Enter","ArrowRight","PageDown"];
+// keyboard: start keys begin the show; then -> / Page Down = next, <- / Page Up = previous; F toggles fullscreen
 addEventListener("keydown",e=>{
-  if(e.key==="ArrowRight" && !busy) show(step(1));
-  if(e.key==="ArrowLeft" && !busy) show(step(-1));
-  if(e.key.toLowerCase()==="f"){ document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen(); }
+  if(e.key.toLowerCase()==="f"){ document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen(); return; }
+  if(!started){ if(START_KEYS.includes(e.key)){ e.preventDefault(); startShow(); } return; }
+  if((e.key==="ArrowRight"||e.key==="PageDown") && !busy) show(step(1));
+  if((e.key==="ArrowLeft"||e.key==="PageUp") && !busy) show(step(-1));
 });
 // hide cursor when idle
 let idleT; addEventListener("mousemove",()=>{document.body.classList.remove("idle");clearTimeout(idleT);idleT=setTimeout(()=>document.body.classList.add("idle"),2500)});
