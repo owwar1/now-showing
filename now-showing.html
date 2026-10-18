@@ -107,7 +107,7 @@ h1::before{content:"";position:absolute;inset:-70% -18%;z-index:-1;pointer-event
 
 /* ---------- POSTERS + MARQUEE ---------- */
 .carousel-wrap{width:100%;height:100%;min-height:0;padding:.8vh 0 1vh}
-.carousel{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;perspective:1600px}
+.carousel{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
 .poster{position:absolute;height:calc(100% - var(--pad)*2);aspect-ratio:2/3;border-radius:4px;overflow:hidden;background:#0b0004}
 /* the whole poster is always shown, never cropped; if its shape differs from 2:3,
    a blurred copy of the same poster fills the gaps */
@@ -125,7 +125,8 @@ h1::before{content:"";position:absolute;inset:-70% -18%;z-index:-1;pointer-event
 @keyframes breathe{0%,100%{opacity:.55}50%{opacity:1}}
 
 /* the bulb frame: an old, rusted theatre sign that is failing */
-.marquee{position:absolute;z-index:4;height:100%;pointer-events:none}
+.marquee{position:absolute;z-index:6;   /* above the lights-out layer: the sign stays on */
+  height:100%;pointer-events:none}
 .marquee::before{content:"";position:absolute;inset:0;border-radius:.6vh;padding:var(--pad);
   background:
     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3'/><feColorMatrix values='0 0 0 0 .05  0 0 0 0 .03  0 0 0 0 .02  0 0 0 .9 -.25'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>"),
