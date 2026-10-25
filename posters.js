@@ -11,54 +11,62 @@ window.POSTERS = [
   },
   {
     "image": "assets/entries/03.jpg",
-    "unit": "ETU"
+    "unit": "CASH"
   },
   {
     "image": "assets/entries/04.jpg",
-    "unit": "GSU"
+    "unit": "ETU"
   },
   {
     "image": "assets/entries/05.jpg",
-    "unit": "ORD-ASMU-PSD"
+    "unit": "GSU"
   },
   {
     "image": "assets/entries/06.jpg",
-    "unit": "SBU-HRMU-RMU"
+    "unit": "ORD-ASMU-PSD"
   },
   {
     "image": "assets/entries/07.jpg",
-    "unit": "WAU-PARU"
+    "unit": "RTU"
   },
   {
     "image": "assets/entries/08.jpg",
-    "unit": "RD"
+    "unit": "SBU-HRMU-RMU"
   },
   {
     "image": "assets/entries/09.jpg",
-    "unit": "PSD"
+    "unit": "WAU-PARU"
   },
   {
     "image": "assets/entries/10.jpg",
-    "unit": "SAO"
+    "unit": "RD"
   },
   {
     "image": "assets/entries/11.jpg",
-    "unit": "ETU"
+    "unit": "PSD"
   },
   {
     "image": "assets/entries/12.jpg",
-    "unit": "ETU"
+    "unit": "SAO"
   },
   {
     "image": "assets/entries/13.jpg",
-    "unit": "GSU"
+    "unit": "ETU"
   },
   {
     "image": "assets/entries/14.jpg",
-    "unit": "GSU"
+    "unit": "ETU"
   },
   {
     "image": "assets/entries/15.jpg",
+    "unit": "GSU"
+  },
+  {
+    "image": "assets/entries/16.jpg",
+    "unit": "GSU"
+  },
+  {
+    "image": "assets/entries/17.jpg",
     "unit": "GSU"
   }
 ];
