@@ -1,3 +1,5 @@
 # local tool settings
 .claude/
 mockups/
+# original full-size entry files (web copies live in assets/entries/)
+assets/Entry *
