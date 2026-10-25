@@ -23,7 +23,7 @@ window.POSTERS = [
   },
   {
     "image": "assets/entries/06.jpg",
-    "unit": "SUB-HRMU-RMU"
+    "unit": "SBU-HRMU-RMU"
   },
   {
     "image": "assets/entries/07.jpg",
