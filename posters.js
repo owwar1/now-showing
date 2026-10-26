@@ -68,5 +68,13 @@ window.POSTERS = [
   {
     "image": "assets/entries/17.jpg",
     "unit": "GSU"
+  },
+  {
+    "image": "assets/entries/18.jpg",
+    "unit": "ETU"
+  },
+  {
+    "image": "assets/entries/19.jpg",
+    "unit": "CASH"
   }
 ];
