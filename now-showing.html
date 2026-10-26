@@ -408,18 +408,13 @@ addEventListener("pointerdown",goFull);
 addEventListener("keydown",e=>{ if(e.key!=="Escape" && e.key.toLowerCase()!=="f") goFull(); });
 document.addEventListener("fullscreenchange",syncHint); addEventListener("resize",syncHint); syncHint();
 
-// opening: on a computer the board waits on the dark stage (sign, bulbs and fog only),
-// fullscreen or not, until the presenter presses Space, Enter, -> or Page Down
-// (the last two are what wireless presentation clickers send). Then the lights
-// flicker on and the show loops. Phones can't do this, so they start right away.
+// the show starts as soon as the page opens: the lights flicker on to the first poster
 let started=false;
 function startShow(){ if(started) return; started=true; show(0,true); }
-if(!canFull) startShow();
-const START_KEYS=[" ","Enter","ArrowRight","PageDown"];
-// keyboard: start keys begin the show; then -> / Page Down = next, <- / Page Up = previous; F toggles fullscreen
+startShow();
+// keyboard: -> / Page Down = next, <- / Page Up = previous (presentation clickers work too); F toggles fullscreen
 addEventListener("keydown",e=>{
   if(e.key.toLowerCase()==="f"){ document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen(); return; }
-  if(!started){ if(START_KEYS.includes(e.key)){ e.preventDefault(); startShow(); } return; }
   if((e.key==="ArrowRight"||e.key==="PageDown") && !busy) show(step(1));
   if((e.key==="ArrowLeft"||e.key==="PageUp") && !busy) show(step(-1));
 });
